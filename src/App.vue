@@ -1,13 +1,19 @@
 <script>
-import { PlusIcon, XMarkIcon, DocumentIcon } from "@heroicons/vue/24/solid";
+import {
+  PlusIcon,
+  XMarkIcon,
+  DocumentIcon,
+  SwatchIcon,
+} from "@heroicons/vue/24/solid";
 import { client } from "./api/client";
 import moment from "moment";
 import "moment/dist/locale/es";
 export default {
-  components: { PlusIcon, XMarkIcon, DocumentIcon },
+  components: { PlusIcon, XMarkIcon, DocumentIcon, SwatchIcon },
 
   data: () => ({
     posts: [],
+    isLoading: false,
     isCreatingPostOpen: false,
     isAddFileModalOpen: false,
     isFileOpen: false,
@@ -25,10 +31,9 @@ export default {
     },
   }),
   computed: {},
-  created() {
-  },
+  created() {},
   mounted() {
-    console.log(moment.locale("es"))
+    console.log(moment.locale("es"));
 
     this.getPosts();
   },
@@ -63,6 +68,7 @@ export default {
       if (!title || !description || postFiles.length < 1) {
         return this.$toast.error("Datos Faltantes Para el Registro");
       }
+      this.isLoading = true
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
@@ -79,6 +85,7 @@ export default {
       });
 
       if (response.status !== 200) {
+        this.isLoading = false
         return this.$toast.error("Error en el registro");
       }
       this.post = {
@@ -86,8 +93,9 @@ export default {
         description: "",
         postFiles: [],
       };
+      await this.getPosts();
+      this.isLoading  = false
       this.isCreatingPostOpen = false;
-
       this.$toast.success("Registro correcto");
     },
     async getPosts() {
@@ -102,6 +110,12 @@ export default {
 </script>
 
 <template>
+  <div
+    class="h-screen w-screen bg-black/50 flex items-center justify-center fixed inset-0"
+    v-if="isLoading"
+  >
+    <SwatchIcon class="w-12 h-12 animate-spin text-indigo-600" />
+  </div>
   <div
     v-if="isFileOpen"
     class="h-screen w-screen bg-black/60 fixed inset-0 flex items-center justify-center p-4 z-20"
