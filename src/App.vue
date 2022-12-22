@@ -68,7 +68,7 @@ export default {
       if (!title || !description || postFiles.length < 1) {
         return this.$toast.error("Datos Faltantes Para el Registro");
       }
-      this.isLoading = true
+      this.isLoading = true;
       const formData = new FormData();
       formData.append("title", title);
       formData.append("description", description);
@@ -85,7 +85,7 @@ export default {
       });
 
       if (response.status !== 200) {
-        this.isLoading = false
+        this.isLoading = false;
         return this.$toast.error("Error en el registro");
       }
       this.post = {
@@ -94,7 +94,7 @@ export default {
         postFiles: [],
       };
       await this.getPosts();
-      this.isLoading  = false
+      this.isLoading = false;
       this.isCreatingPostOpen = false;
       this.$toast.success("Registro correcto");
     },
@@ -216,108 +216,114 @@ export default {
     </div>
   </div>
 
-  <div class="w-screen h-screen bg-gray-299">
-    <div
-      class="h-12 class bg-indigo-600 text-white font-bold text-xl flex items-center px-4"
-    >
-      Actividades Ciclo Universitario - Informes Finales
-    </div>
+  <div class="w-screen h-screen overflow-y-auto bg-gray-100">
+    <div class="h-full w-full">
+      <div
+        class="h-12 bg-indigo-600 text-white font-bold text-xl flex items-center px-4"
+      >
+        Actividades Ciclo Universitario - Informes Finales
+      </div>
 
-    <div class="p-4">
-      <div class="flex flex-col gap-2" v-if="!isCreatingPostOpen">
-        <div>
+      <div class="w-full p-4" v-if="true">
+        <div class="flex flex-col w-full gap-2" v-if="!isCreatingPostOpen">
           <span class="text-xl font-medium"
             >Publicaciones
-            <span class="text-xs text-gray-500">{{
-              posts.length < 1 ? "No hay posts creados, cree uno nuevo" : ""
-            }}</span></span
-          >
-        </div>
-        <div class="grid grid-cols-3 gap-4">
-          <div
-            class="h-56 shadow rounded-lg relative"
-            v-for="(p, i) in posts"
-            @click="openSelectedPost(i)"
-          >
-            <div class="h-full pb-16">
-              <img
-                src="@/assets/images/blog-image.jpg"
-                class="w-full h-full object-cover rounded-t-lg"
-              />
-            </div>
-            <div class="h-16 p-1 absolute bottom-0 inset-x-0">
-              <p class="flex flex-col">
-                <span class="font-medium w-full truncate">{{ p.title }}</span>
+            <span class="text-xs text-gray-500">
+              {{
+                posts.length < 1 ? "No hay posts creados, cree uno nuevo" : ""
+              }}
+            </span>
+          </span>
+          <div class="">
+            <div class="grid grid-cols-3 gap-4 w-full">
+              <button
+                class="h-56 shadow rounded-lg relative"
+                v-for="(p, i) in posts"
+                @click="openSelectedPost(i)"
+              >
+                <div class="h-full pb-16">
+                  <img
+                    src="@/assets/images/blog-image.jpg"
+                    class="w-full h-full object-cover rounded-t-lg"
+                  />
+                </div>
+                <div class="h-16 p-1 bg-white absolute bottom-0 inset-x-0">
+                  <p class="flex flex-col">
+                    <span class="font-medium w-full truncate">{{
+                      p.title
+                    }}</span>
 
-                <span class="text-xs font-light text-gray-600 w-full">{{
-                  getDate(p.creationDate._seconds)
-                }}</span>
+                    <span class="text-xs font-light text-gray-600 w-full">{{
+                      getDate(p.creationDate._seconds)
+                    }}</span>
+                  </p>
+                </div>
+              </button>
+
+              <button
+                @click="isCreatingPostOpen = true"
+                class="border-2 border-dashed border-indigo-600 h-56 rounded-lg text-indigo-600 hover:text-white hover:bg-indigo-600"
+              >
+                <div class="w-full h-full flex items-center justify-center">
+                  <PlusIcon class="w-8 h-8" />
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div v-else class="grid gap-2">
+          <input
+            type="text"
+            v-model="post.title"
+            class="border-indigo-500 border-b-2 focus:outline-none pb-2 text-lg"
+            placeholder="Titulo"
+          />
+          <textarea
+            class="border-indigo-500 border-b-2 focus:outline-none pb-2 text-lg"
+            v-model="post.description"
+            placeholder="Descripción Principal"
+          ></textarea>
+          <div class="bg-gray-200 flex min-h-56" v-for="p in post.postFiles">
+            <div class="w-1/3 p-4">
+              <div
+                class="border border-indigo-500 py-2 text-indigo-500 rounded-lg border-dashed h-full flex flex-col items-center justify-center"
+              >
+                <DocumentIcon class="w-8 h-8" />
+                <span class="text-sm font-light w-full truncate text-center">
+                  {{ p.file?.name }}</span
+                >
+              </div>
+            </div>
+            <div class="w-2/3 p-4">
+              <p class="flex flex-col">
+                <span class="font-bold text-lg">{{ p.title }}</span>
+                <span>{{ p.description }}</span>
               </p>
             </div>
           </div>
 
           <button
-            @click="isCreatingPostOpen = true"
-            class="border-2 border-dashed border-indigo-600 h-56 rounded-lg text-indigo-600 hover:text-white hover:bg-indigo-600"
+            class="border-2 border-dashed border-indigo-600 h-12 rounded-lg text-indigo-600 hover:text-white hover:bg-indigo-600"
+            @click="isAddFileModalOpen = true"
           >
             <div class="w-full h-full flex items-center justify-center">
               <PlusIcon class="w-8 h-8" />
             </div>
           </button>
-        </div>
-      </div>
-      <div v-else class="grid gap-2">
-        <input
-          type="text"
-          v-model="post.title"
-          class="border-indigo-500 border-b-2 focus:outline-none pb-2 text-lg"
-          placeholder="Titulo"
-        />
-        <textarea
-          class="border-indigo-500 border-b-2 focus:outline-none pb-2 text-lg"
-          v-model="post.description"
-          placeholder="Descripción Principal"
-        ></textarea>
-        <div class="bg-gray-200 flex min-h-56" v-for="p in post.postFiles">
-          <div class="w-1/3 p-4">
-            <div
-              class="border border-indigo-500 py-2 text-indigo-500 rounded-lg border-dashed h-full flex flex-col items-center justify-center"
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              class="text-indigo-500 rounded-lg py-2"
+              @click="isCreatingPostOpen = false"
             >
-              <DocumentIcon class="w-8 h-8" />
-              <span class="text-sm font-light w-full truncate text-center">
-                {{ p.file?.name }}</span
-              >
-            </div>
+              Cancelar
+            </button>
+            <button
+              class="bg-indigo-500 text-white rounded-lg py-2"
+              @click="savePost"
+            >
+              Guardar
+            </button>
           </div>
-          <div class="w-2/3 p-4">
-            <p class="flex flex-col">
-              <span class="font-bold text-lg">{{ p.title }}</span>
-              <span>{{ p.description }}</span>
-            </p>
-          </div>
-        </div>
-
-        <button
-          class="border-2 border-dashed border-indigo-600 h-12 rounded-lg text-indigo-600 hover:text-white hover:bg-indigo-600"
-          @click="isAddFileModalOpen = true"
-        >
-          <div class="w-full h-full flex items-center justify-center">
-            <PlusIcon class="w-8 h-8" />
-          </div>
-        </button>
-        <div class="grid grid-cols-2 gap-2">
-          <button
-            class="text-indigo-500 rounded-lg py-2"
-            @click="isCreatingPostOpen = false"
-          >
-            Cancelar
-          </button>
-          <button
-            class="bg-indigo-500 text-white rounded-lg py-2"
-            @click="savePost"
-          >
-            Guardar
-          </button>
         </div>
       </div>
     </div>
